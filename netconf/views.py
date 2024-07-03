@@ -1,36 +1,48 @@
-from django.shortcuts import render
+
+
+from django.shortcuts import render, redirect
 from ncclient import manager
+from ncclient.operations.errors import TimeoutExpiredError
+from .forms import ConnectForm
 
-def netconf_operation(request):
-    host = 'localhost'  # Change to your Netopeer server address
-    port = 830  # Netopeer default port
-    username = 'admin'  # Change to your username
-    password = 'admin'  # Change to your password
-
-    netconf_reply = None
-
+def connect(request):
     if request.method == 'POST':
-        # Retrieve form data
-        netconf_command = request.POST.get('command')
+        form = ConnectForm(request.POST)
+        if form.is_valid():
+            host = form.cleaned_data['host']
+            port = form.cleaned_data['port']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
-        # Connect to the Netopeer server
-        with manager.connect(
-            host=host,
-            port=port,
-            username=username,
-            password=password,
-            hostkey_verify=False,
-            device_params={'name': 'default'},
-            allow_agent=False,
-            look_for_keys=False
-        ) as m:
+            try:
+                with manager.connect(
+                        host=host,
+                        port=port,
+                        username=username,
+                        password=password,
+                        hostkey_verify=False,  # Disable SSH host key verification
+                        device_params={'name': 'default'}) as m:
+                    
+                    server_capabilities = m.server_capabilities
 
-            # Example: Perform a get-config operation
-            if netconf_command == 'get-config':
-                netconf_reply = m.get_config(source='running').xml
-            # Add more commands as needed
+                    # Redirect to connect success page
+                    return redirect('connect_success')
+            
+            except TimeoutExpiredError as e:
+                error_message = f"Connection to {host}:{port} timed out."
+                return render(request, 'connect.html', {'form': form, 'error_message': error_message})
 
-    return render(request, 'netconf/netconf_operation.html', {'reply': netconf_reply})
-from django.shortcuts import render
+            except Exception as e:
+                error_message = f"Error connecting to {host}:{port}: {str(e)}"
+                return render(request, 'connect.html', {'form': form, 'error_message': error_message})
+    
+    else:
+        form = ConnectForm()
+    
+    return render(request, 'connect.html', {'form': form})
 
+
+def connect_success(request):
+    # You can perform any additional logic here if needed
+    return render(request, 'connect_success.html')
 

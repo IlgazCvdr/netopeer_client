@@ -1,6 +1,9 @@
-from django.urls import path
+from django.contrib import admin
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('netconf/', views.netconf_operation, name='netconf_operation'),
+    path('connect/', views.connect, name='connect'),
+    path('connect-success/', views.connect_success, name='connect_success'),
+
 ]

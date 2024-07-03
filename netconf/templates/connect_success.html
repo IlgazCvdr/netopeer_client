@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connection Successful</title>
+</head>
+<body>
+    <h2>Connection Successful</h2>
+    <p>Connected to {{ host }}</p>
+    <p>Server Capabilities:</p>
+    <ul>
+        {% for capability in capabilities %}
+            <li>{{ capability }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
