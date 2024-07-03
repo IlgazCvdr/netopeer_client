@@ -5,5 +5,4 @@ from . import views
 urlpatterns = [
     path('connect/', views.connect, name='connect'),
     path('connect-success/', views.connect_success, name='connect_success'),
-
 ]
