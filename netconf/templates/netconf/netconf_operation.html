@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NETCONF Operation</title>
+</head>
+<body>
+    <h1>Perform NETCONF Operation</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="command">Command:</label>
+        <select name="command" id="command">
+            <option value="get-config">Get Config</option>
+            <!-- Add more options as needed -->
+        </select>
+        <button type="submit">Execute</button>
+    </form>
+
+    {% if reply %}
+    <h2>Response</h2>
+    <pre>{{ reply }}</pre>
+    {% endif %}
+</body>
+</html>
