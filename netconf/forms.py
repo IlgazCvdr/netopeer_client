@@ -5,3 +5,12 @@ class ConnectForm(forms.Form):
     port = forms.IntegerField(label='Port', initial=830)
     username = forms.CharField(label='Username', max_length=100, initial='ilgaz')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+
+class ConfigTypeForm(forms.Form):
+    CONFIG_CHOICES = [
+        ('interfaces', 'Interfaces'),
+        ('system', 'System Information'),
+        ('full', 'Full Configuration'),
+    ]
+    config_type = forms.ChoiceField(choices=CONFIG_CHOICES, required=True)

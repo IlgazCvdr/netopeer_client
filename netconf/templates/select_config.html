@@ -1,0 +1,6 @@
+<form method="POST" action="{% url 'get_config' %}">
+    {% csrf_token %}
+    <label for="config_type">Select Configuration Type:</label>
+    {{ form.config_type }}
+    <button type="submit">Fetch Configuration</button>
+</form>

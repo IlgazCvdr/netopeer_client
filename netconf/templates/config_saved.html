@@ -1,11 +1,11 @@
-<!-- templates/config_saved.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Configuration Saved</title>
 </head>
 <body>
-    <h1>Configuration Saved Successfully</h1>
-    <p>The configuration has been saved to: <a href="{{ MEDIA_URL }}netopeer_configs/{{ file_path|basename }}">{{ file_path|basename }}</a></p>
+    <h2>Configuration Saved Successfully</h2>
+    <p>The configuration has been saved to: {{ file_path }}</p>
+    <a href="{{ file_path }}">Download Configuration</a>
 </body>
 </html>
