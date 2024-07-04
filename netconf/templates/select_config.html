@@ -1,35 +1,71 @@
 <!-- select_config.html -->
 
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
-  <h2>Select Configuration Type</h2>
+  <h2>Select Configuration</h2>
   {% if error_message %}
   <div class="alert alert-danger" role="alert">
     {{ error_message }}
   </div>
   {% endif %}
+  
   <form method="post">
     {% csrf_token %}
+    
     <div class="mb-3">
-      <label for="id_config_type">{{ form.config_type.label }}</label>
-      {{ form.config_type }}
-      {% if form.config_type.errors %}
-      <div class="invalid-feedback">
-        {{ form.config_type.errors|join:", " }}
-      </div>
-      {% endif %}
+      <label for="id_method" class="form-label">Select Configuration Method:</label>
+      <select id="id_method" name="method" class="form-select">
+        <option value="all" selected>All Configurations</option>
+        <option value="interfaces">Interfaces</option>
+        <option value="system">System Information</option>
+        <!-- Add more options as needed -->
+      </select>
     </div>
-    <button type="submit" class="btn btn-primary">Fetch Configuration</button>
+    
+    <button type="submit" class="btn btn-primary mb-3">Fetch Configuration</button>
   </form>
+  
+  <div class="mb-3">
+    <label class="form-label">Server Capabilities:</label>
+    
+    <!-- Scrollable list of server capabilities -->
+    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+      {% for key, value in form.config_type.field.choices %}
+        <div class="list-group-item">{{ value }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'connect' %}" class="btn btn-secondary">Go back to connection</a>
 
   {% if config_data %}
   <hr>
   <h3>Configuration Data</h3>
   <pre>{{ config_data }}</pre>
-  <a href="{% url 'save_config' capability=config_type %}" class="btn btn-success">Save Configuration</a>
+  <!-- Button to trigger modal -->
+  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveModal">
+    Save Configuration
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="saveModalLabel">Save Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Configuration data has been saved successfully.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   {% endif %}
 </div>
 {% endblock %}
