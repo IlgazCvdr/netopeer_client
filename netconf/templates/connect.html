@@ -1,31 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Connect to Netopeer2 Server</title>
-</head>
-<body>
-    <h1>Connect to Netopeer2 Server</h1>
+<!-- connect.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
-    {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
-    {% endif %}
-
-    <form method="post">
-        {% csrf_token %}
-        <label for="id_host">Host Name:</label>
-        <input type="text" id="id_host" name="host" value="{{ form.host.value }}">
-        <br><br>
-        <label for="id_port">Port:</label>
-        <input type="text" id="id_port" name="port" value="{{ form.port.value }}">
-        <br><br>
-        <label for="id_username">Username:</label>
-        <input type="text" id="id_username" name="username" value="{{ form.username.value }}">
-        <br><br>
-        <label for="id_password">Password:</label>
-        <input type="password" id="id_password" name="password">
-        <br><br>
-        <input type="submit" value="Connect">
-    </form>
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.host|as_crispy_field }}
+                {{ form.port|as_crispy_field }}
+                {{ form.username|as_crispy_field }}
+                {{ form.password|as_crispy_field }}
+                <button type="submit" class="btn btn-primary">Connect</button>
+            </form>
+            {% if error_message %}
+            <div class="alert alert-danger mt-3">
+                {{ error_message }}
+            </div>
+            {% endif %}
+            {% if show_popup %}
+            <script>
+                // JavaScript for displaying a popup on authentication error
+                alert("Authentication failed. Please check your credentials and try again.");
+            </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -12,7 +12,7 @@ def demo(host, user, passwd):
         print(f"Failed to connect to {host}: {str(e)}")
 
 if __name__ == '__main__':
-    hostname = "hasan-ThinkCentre-neo-50t-Gen-4"
-    username = "hasan"
-    password = "" 
+    hostname = 'ilgaz-ThinkCentre-neo-50t-Gen-4'
+    username = "ilgaz"
+    password = "H2Oiswater!" 
     demo(hostname, username, password)

@@ -1,6 +1,35 @@
-<form method="POST" action="{% url 'get_config' %}">
+<!-- select_config.html -->
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+  <h2>Select Configuration Type</h2>
+  {% if error_message %}
+  <div class="alert alert-danger" role="alert">
+    {{ error_message }}
+  </div>
+  {% endif %}
+  <form method="post">
     {% csrf_token %}
-    <label for="config_type">Select Configuration Type:</label>
-    {{ form.config_type }}
-    <button type="submit">Fetch Configuration</button>
-</form>
+    <div class="mb-3">
+      <label for="id_config_type">{{ form.config_type.label }}</label>
+      {{ form.config_type }}
+      {% if form.config_type.errors %}
+      <div class="invalid-feedback">
+        {{ form.config_type.errors|join:", " }}
+      </div>
+      {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Fetch Configuration</button>
+  </form>
+
+  {% if config_data %}
+  <hr>
+  <h3>Configuration Data</h3>
+  <pre>{{ config_data }}</pre>
+  <a href="{% url 'save_config' capability=config_type %}" class="btn btn-success">Save Configuration</a>
+  {% endif %}
+</div>
+{% endblock %}
