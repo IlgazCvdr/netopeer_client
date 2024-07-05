@@ -7,23 +7,54 @@ from ncclient.operations.errors import TimeoutExpiredError
 from ncclient.transport.errors import AuthenticationError as AuthenticationError
 from ncclient.operations.rpc import RPCError 
 from .forms import ConnectForm, ConfigTypeForm
-
+import xmltodict 
 # Define a global variable for the manager connection
 global_manager = None
+
+# Define the new name value
+new_name = "ahmet"
+
+# Define the edit-config XML
+edit_config_xml = f"""
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+    <people xmlns="test1">
+        <name>{new_name}</name>
+    </people>
+</config>
+"""
+
 def get_config_filter(config_type):
     # Define the filter based on the type of configuration requested
     if config_type == 'interfaces':
-        return '''
-        <filter>
-            <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
-        </filter>
-        '''
+        return """
+<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
+    <keystore xmlns="urn:ietf:params:xml:ns:yang:ietf-keystore">
+        <asymmetric-keys>
+            <asymmetric-key>
+                <private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types"/>
+            </asymmetric-key>
+        </asymmetric-keys>
+    </keystore>
+</filter>
+"""
     elif config_type == 'system':
-        return '''
-        <filter>
-            <system xmlns="urn:ietf:params:xml:ns:yang:ietf-system"/>
-        </filter>
-        '''
+        return """
+<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
+    <people xmlns="test1">
+        <name/>
+    </people>
+</filter>
+"""
+    elif config_type == "test1":
+        return """
+<filter>
+    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+        <people xmlns="test1">
+            <name>Ilgaz</name>
+        </people>
+    </data>
+</filter>
+"""
     else:
         return None
 def connect(request):
@@ -114,9 +145,15 @@ def select_config(request):
             method = request.POST.get('method')
 
             try:
+
+                response = global_manager.edit_config(target='running', config=edit_config_xml)
+                
+                print(response)
+
                 if method == 'all':
                     # Fetch all configurations
                     config_filter = '<config><all/></config>'
+                    #config = global_manager.get().data_xml
                     config = global_manager.get_config(source='running').data_xml
                     config_type = 'all_configurations'
                 else:
@@ -126,9 +163,11 @@ def select_config(request):
                         raise ValueError(f"Invalid method: {method}")
 
                     # Fetch configuration data based on the selected method
-                    config = global_manager.get_config(source='running', filter=('subtree', config_filter)).data_xml
+                    config = global_manager.get(config_filter).data_xml
                     config_type = method
 
+                config_dict = xmltodict.parse(config)
+                print(config_dict)
                 # Save configuration data to a file
                 file_name = "saves/"+f"{config_type}_config.xml"
                 file_path = os.path.join(settings.MEDIA_ROOT, file_name)
