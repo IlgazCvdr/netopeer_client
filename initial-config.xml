@@ -1,0 +1,6 @@
+<people xmlns="test1">
+        <person>
+                <name>John Doe</name>
+                <phone>12345</phone>
+        </person>
+</people>

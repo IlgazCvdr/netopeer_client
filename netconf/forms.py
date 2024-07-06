@@ -1,11 +1,17 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from dotenv import load_dotenv
+import os
 
 class ConnectForm(forms.Form):
-    host = forms.CharField(label='Host', max_length=100, initial="ilgaz-ThinkCentre-neo-50t-Gen-4")
-    port = forms.IntegerField(label='Port', initial="830")
-    username = forms.CharField(label='Username', max_length=100, initial="ilgaz")
+    load_dotenv()
+    host = os.getenv('HOST')
+    port = os.getenv('PORT')
+    username = os.getenv('USERNAME')
+    host = forms.CharField(label='Host', max_length=100, initial=host)
+    port = forms.IntegerField(label='Port', initial=port)
+    username = forms.CharField(label='Username', max_length=100, initial=username)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):

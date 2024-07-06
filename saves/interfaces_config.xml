@@ -1,11 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <keystore xmlns="urn:ietf:params:xml:ns:yang:ietf-keystore">
-        <asymmetric-keys>
-            <asymmetric-key>
-                <name>genkey</name>
-                <private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">ct:rsa-private-key-format</private-key-format>
-            </asymmetric-key>
-        </asymmetric-keys>
-    </keystore>
-</data>
+<?xml version="1.0" encoding="UTF-8"?><data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"><keystore xmlns="urn:ietf:params:xml:ns:yang:ietf-keystore"><asymmetric-keys><asymmetric-key><name>genkey</name><private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">ct:rsa-private-key-format</private-key-format></asymmetric-key></asymmetric-keys></keystore></data>

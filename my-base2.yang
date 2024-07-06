@@ -1,0 +1,30 @@
+module my-base2 {
+    yang-version 1.1;
+    namespace "test1";
+    prefix mb;
+
+    organization "National Yang Ming Chiao Tung University";
+    contact "Hello Yang";
+    description "This yang module is for testing and a basic example";
+
+    typedef phonenumber {
+        type string {
+            pattern "[0-9]{5}";
+        }
+        description "Phone Number";
+    }
+
+    container people {
+        list person {
+            key "name";
+            leaf name {
+                type string;
+                mandatory true;
+            }
+            leaf phone {
+                type phonenumber;
+                mandatory true;
+            }
+        }
+    }
+}

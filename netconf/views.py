@@ -13,12 +13,15 @@ global_manager = None
 
 # Define the new name value
 new_name = "ahmet"
-
+new_phone = "31313"
 # Define the edit-config XML
 edit_config_xml = f"""
 <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
     <people xmlns="test1">
-        <name>{new_name}</name>
+        <person>
+            <name>{new_name}</name>
+            <phone>{new_phone}</phone>
+        </person>
     </people>
 </config>
 """
@@ -41,7 +44,9 @@ def get_config_filter(config_type):
         return """
 <filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
     <people xmlns="test1">
-        <name/>
+        <person>
+            <name>John Doe</name>
+        </person>
     </people>
 </filter>
 """
@@ -50,7 +55,9 @@ def get_config_filter(config_type):
 <filter>
     <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
         <people xmlns="test1">
-            <name>Ilgaz</name>
+            <person>
+                <name>John Doe</name>
+             </person>
         </people>
     </data>
 </filter>
