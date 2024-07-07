@@ -1,0 +1,40 @@
+<!-- create_xml.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_method" class="form-label">Current Element is "{{current}}". You can select a child
+                element.</label>
+            <select id="id_method" name="method" class="form-select">
+                {% for item in children %}
+                <option value="{{item}}">{{ item }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" name="action" value="select" class="btn btn-primary mb-3">Select</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add" />
+        <input type="hidden" name="add" value="{{current}}" />
+        <button type="submit" class="btn btn-primary mb-3">Add</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset" />
+        <input type="hidden" name="reset" value="{{current}}" />
+        <button type="submit" class="btn btn-primary mb-3">Reset</button>
+    </form>
+</div>
+{% endblock %}

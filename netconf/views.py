@@ -8,9 +8,15 @@ from ncclient.transport.errors import AuthenticationError as AuthenticationError
 from ncclient.operations.rpc import RPCError 
 from .forms import ConnectForm, ConfigTypeForm
 import xmltodict 
+from dotenv import load_dotenv
+import os
+import copy
 # Define a global variable for the manager connection
 global_manager = None
-
+global_dict = None
+global_dict_iterate = None
+global_current = None
+global_mark_parent_list = []
 # Define the new name value
 new_name = "ahmet"
 new_phone = "31313"
@@ -211,3 +217,143 @@ def select_config(request):
     except Exception as e:
         error_message = f"Error connecting or fetching server capabilities: {str(e)}"
         return render(request, 'select_config.html', {'form': ConfigTypeForm(), 'error_message': error_message})
+
+def replace_leaf(leaf):
+    temp = dict()
+    temp["isleaf"] = True
+    temp["value"] = leaf
+    return temp 
+def replace_leaves(dict1):
+    for key, value in dict1.items():
+        if isinstance(value, dict):
+            replace_leaves(value)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    replace_leaves(item)
+        elif key!="@xmlns" and key != "@xmlns:ct":
+            dict1[key] = replace_leaf(value)
+    return dict1
+
+def print_marked(root):
+    if type(root) == dict:
+        if not "isleaf" in set(root.keys()):
+            if "marked" in set(root.keys()):
+                print(root)
+            for key, value in root.items():
+                print_marked(value)  
+        else:
+            if "marked" in set(root.keys()):
+                print(root) 
+    elif type(root) == list:
+        if "marked" in set(root[-1].keys()):
+            print(root)
+        for item in root:
+            mark_Children(item)
+    else:
+        pass
+
+def mark_Children(root):
+    if type(root) == dict:
+        if not "isleaf" in set(root.keys()):
+            for key, value in root.items():
+                mark_Children(value)
+        root["marked"] = True    
+    elif type(root) == list:
+        for item in root:
+            mark_Children(item)
+        root.append({"marked":True})
+    else:
+        pass
+
+def find_ancestor(root, target):
+    print(root,target)
+    if type(root) is dict:
+        return root[target]
+    else:
+        for i in root:
+            if str(i) == target:
+                return i
+def mark_Parents():
+    global global_mark_parent_list
+    global global_dict
+    temp = copy.deepcopy(global_dict)
+    #print("asdsadsad:"+str(global_mark_parent_list))
+    for i in global_mark_parent_list:
+        temp = find_ancestor(temp, i)
+        if type(temp) is dict:
+            temp["marked"] = True
+        else:
+            temp.append({"marked":True})
+    global_mark_parent_list = []
+def mark(root):
+    mark_Children(root)
+    mark_Parents()
+
+def create_xml(request):
+    global global_manager
+    global global_dict
+    global global_current
+    global global_mark_parent_list
+    global global_dict_iterate
+    load_dotenv()
+    # Retrieve connection data from session
+    connection_data = request.session.get('netopeer_connection')
+
+    if not connection_data:
+        return HttpResponse("Connection data not found in session.", status=400)
+
+    host = connection_data['host']
+    port = connection_data['port']
+    username = connection_data['username']
+    password = connection_data['password']
+
+
+    action = request.POST.get('action')
+
+    if global_dict is None or action == "reset" or action == "add":
+        dict_content = dict()
+        with open(os.getenv("XML_FILE"), 'r') as file:
+            xml_content = file.read()
+            dict_content = xmltodict.parse(xml_content)
+        current_element = [i for i in dict_content.keys()][0]
+        dict_content = replace_leaves(dict_content)
+        if action == "reset" or global_dict is None:
+            global_dict = copy.deepcopy(dict_content)
+        global_dict_iterate = copy.deepcopy(global_dict)
+        if action == "add":
+            mark(global_current)
+            #print(global_dict)
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n")
+        print_marked(global_dict[current_element])
+    else:
+        current_element = request.POST.get('method')
+    if not(type(global_dict_iterate) == dict):
+        #print(global_mark_parent_list)
+        return render(request, 'create_xml.html',{'current':global_current, 'children':global_dict_iterate,'error_message':"You already selected the leaf"})
+    children = global_dict_iterate[current_element]
+    name = current_element
+    children_names = []
+    #print(global_mark_parent_list)
+    global_current = current_element
+    if type(children) == dict:
+        if "isleaf" in set(children.keys()):
+            global_mark_parent_list.append(current_element)
+            global_dict_iterate = list()
+            global_dict_iterate.append(children["value"])
+            #print(global_dict)
+            return render(request, 'create_xml.html',{'current':current_element, 'children':global_dict_iterate})
+        for i in children.keys():
+            if i != "@xmlns" and i != "@xmlns:ct":
+                children_names.append(i)
+            else:
+                name = current_element + " xmlns:" + children[i]
+        global_dict_iterate = children
+    else:
+        temp = dict()
+        for i in children:
+            children_names.append(i)
+            temp[str(i)] = i
+        global_dict_iterate = temp
+    global_mark_parent_list.append(current_element)
+    return render(request, 'create_xml.html',{'current':name, 'children':children_names})
