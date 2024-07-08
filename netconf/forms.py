@@ -14,9 +14,12 @@ class ConnectForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Connect'))
 
+
 class ConfigTypeForm(forms.Form):
     config_type = forms.ChoiceField(choices=[], required=True, label='Select Configuration Type')
 
-    def __init__(self, capabilities, *args, **kwargs):
+    def __init__(self, *args, choices=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['config_type'].choices = [(cap, cap) for cap in capabilities]
+        
+        if choices:
+            self.fields['config_type'].choices = choices

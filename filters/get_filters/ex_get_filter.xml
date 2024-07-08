@@ -1,0 +1,6 @@
+<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
+    <people xmlns="test1">
+        <name/>
+        <phone/>
+    </people>
+</filter>
