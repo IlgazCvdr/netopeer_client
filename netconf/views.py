@@ -17,7 +17,7 @@ global_manager = None
 global_dict = None
 global_dict_iterate = None
 global_current = None
-global_mark_parent_list = set()
+global_mark_parent_list = list()
 global_mark_parent_temp = set()
 # Define the new name value
 new_name = "ahmet"
@@ -221,21 +221,18 @@ def select_config(request):
         return render(request, 'select_config.html', {'form': ConfigTypeForm(), 'error_message': error_message})
 
 
-def mark():
-    global global_mark_parent_list
-    global global_mark_parent_temp 
-    global_mark_parent_list = global_mark_parent_temp.union(global_mark_parent_list)
-    global_mark_parent_temp = set()
-
 def remover(root):
     global global_mark_parent_list
-    for i in root:
-        if i in global_mark_parent_list:
+    print("traverse"+root.tag)
+    for i in root[:]:
+        print(str(i),i in global_mark_parent_list)
+        if not i in global_mark_parent_list:
             root.remove(i)
-            print(i.tag)
         else:
+            print("not remove:"+i.tag)
             remover(i)
-    return root
+    print(global_mark_parent_list)
+    return 
 
 def print_xml(root):
     remover(root)
@@ -266,12 +263,12 @@ def create_xml(request):
         tree = ET.parse('./saves/all_configurations_config.xml')
         root = tree.getroot()
         if action == "add":
-            mark()
             for i in global_mark_parent_list:
-                print(i.tag)
+                print("parent:"+i.tag)
             print_xml(root)
-        global_current = copy.deepcopy(root)
-        global_mark_parent_temp.add(global_current)
+            print(ET.tostring(root, encoding='utf-8', method='xml'))
+        global_current = root
+        global_mark_parent_list.append(global_current)
         return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[i.tag for i in global_current]})
     if len(global_current) == 0:
         return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[global_current.text],'error_message':"You already selected the leaf"})
@@ -285,7 +282,7 @@ def create_xml(request):
         lst = []
         for i in global_current:
             lst.append(i.tag)
-        global_mark_parent_temp.add(global_current)
+        global_mark_parent_list.append(global_current)
         if len(global_current) == 0:
             return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[global_current.text]})
         return render(request, 'create_xml.html',{'current':global_current.tag, 'children':lst})
