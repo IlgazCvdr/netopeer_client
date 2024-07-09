@@ -20,9 +20,33 @@ class ConnectForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Connect'))
 
+
 class ConfigTypeForm(forms.Form):
     config_type = forms.ChoiceField(choices=[], required=True, label='Select Configuration Type')
 
-    def __init__(self, capabilities, *args, **kwargs):
+    def __init__(self, *args, choices=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['config_type'].choices = [(cap, cap) for cap in capabilities]
+        
+        if choices:
+            self.fields['config_type'].choices = choices
+
+class VariableValueForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        variables = kwargs.pop('variables', None)  # Retrieve variables from kwargs
+        
+        super().__init__(*args, **kwargs)
+        
+        if variables:
+            for i, (path, variable_name) in enumerate(variables, start=1):
+                self.fields[f'variable_{i}'] = forms.CharField(
+                    label=f'Path of Variable {i}',
+                    initial=path,
+                    required=False,
+                    widget=forms.TextInput(attrs={'readonly': 'readonly'})
+                )
+                self.fields[f'value_{i}'] = forms.CharField(
+                    label=f'Text Field {i}',
+                    max_length=100,
+                    required=False,
+                    widget=forms.TextInput()
+                )

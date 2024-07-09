@@ -1,5 +1,4 @@
 <!-- select_config.html -->
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -10,30 +9,29 @@
     {{ error_message }}
   </div>
   {% endif %}
-  
+
   <form method="post">
     {% csrf_token %}
-    
+
     <div class="mb-3">
       <label for="id_method" class="form-label">Select Configuration Method:</label>
       <select id="id_method" name="method" class="form-select">
-        <option value="all" selected>All Configurations</option>
-        <option value="interfaces">Interfaces</option>
-        <option value="system">System Information</option>
-        <!-- Add more options as needed -->
+        {% for option in form.config_type.field.choices %}
+        <option value="{{ option.0 }}" {% if option.0 == form.initial.method %} selected {% endif %}>{{ option.1 }}</option>
+        {% endfor %}
       </select>
     </div>
-    
-    <button type="submit" class="btn btn-primary mb-3">Fetch Configuration</button>
+
+    <button type="submit" class="btn btn-primary mb-3">Get Configuration</button>
   </form>
-  
+
   <div class="mb-3">
     <label class="form-label">Server Capabilities:</label>
-    
+
     <!-- Scrollable list of server capabilities -->
     <div class="list-group" style="max-height: 200px; overflow-y: auto;">
-      {% for key, value in form.config_type.field.choices %}
-        <div class="list-group-item">{{ value }}</div>
+      {% for capability in server_capabilities %}
+      <div class="list-group-item">{{ capability }}</div>
       {% endfor %}
     </div>
   </div>
@@ -44,6 +42,12 @@
   <hr>
   <h3>Configuration Data</h3>
   <pre>{{ config_data }}</pre>
+
+  {% if file_path %}
+  <!-- Download link for configuration file -->
+  <a href="{{ file_path }}" class="btn btn-success" download>Download Configuration File</a>
+  {% endif %}
+
   <!-- Button to trigger modal -->
   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveModal">
     Save Configuration
@@ -67,5 +71,8 @@
     </div>
   </div>
   {% endif %}
+
+  <!-- Button to Edit Filter Page -->
+  <a href="{% url 'edit_filter' %}" class="btn btn-warning mb-3">Edit Filter</a>
 </div>
 {% endblock %}

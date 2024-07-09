@@ -1,0 +1,6 @@
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+    <people xmlns="test1">
+        <name>{$1}</name>
+        <phone>{$2}</phone>
+    </people>
+</config>
