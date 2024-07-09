@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <keystore xmlns="urn:ietf:params:xml:ns:yang:ietf-keystore">
     <asymmetric-keys>
       <asymmetric-key>
         <name>genkey</name>
-        <public-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">
-          ct:ssh-public-key-format</public-key-format>
-        <private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">
-          ct:rsa-private-key-format</private-key-format>
-        <cleartext-private-key>
-          MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCUocRtteqhfozc6bzZiJj8PIIc1bu+mGAheNFsxtnH4NoP5oStHQFOOn0uQa6JdzWb3KssiDmgmhM5ZTC+EZPoQR8H2J6q0wRJNMAqLkAGRsC4t8EkvQf9u5D3/rO1e36gxExaBUI4NcXNbtO/mPyusgUvQhfsK5tn21oFTvptHqn+jL/idnaADU2djw2TEhN6R7Nci/auGB8qB04yaGPCTflY8rPw8+//FY+LVs9LLi3+BVYRcq7CZDTnBb0bXv/I2cboOFOB4+OrTPM25Gqc83HADif0c8h1V9rJijdXhg4teDSxX6avl0mqLNLAvfFI/fdwZ8P17cO4JE7FnXtjAgMBAAECggEAB8eZMX47zsIspgTcrAI4smiJuEVTs2aPDubKXMg3w/ziomxtdhDg7Z2ldGi0YGD1/wzY2iwzNVMl6HOBzqEQPdroFeVia2HqL9lr/t6MNAfmCdp3E0Y1sd6XIvPuUh8prJ6PDzMxQ8yaEuZXJ7Mz9AJAv+LUv7mJ7oYOZd1mwZQB2Nu1Nxkcw/SEEesbVmUfWGAuzxjiAqWKYfIOBzXTGsbJgZ5X7axILm8wAw2imn0NA3+quTAljX2trOOzjIE3kEcmNzyfkxAWCuf0drrKZFZ2ysriGiz+yu4gnabIT9iY9luUuuuHYGEkNNd6GEkZe2z0RInukYpwKGZzFISXGQKBgQDQYwQGKvnTjuZgbZXiXbEGT9SBDaVi1j2y6rKl/v/tuQ69Xa1jdAugE37KUGd9eGPQnoxuxyS4eKe0AEP+VYaRDABEYSFaehaHV+Y8QjbFyHqrKTIRJx1/AcZdJPAAHqe3wBe5p2KBfGMYvJ/asTjIbHP8rbQME/Ks+A7ylFEzRQKBgQC2l4/vHYdxYj4iULJzqPgLPPF6jWmXiPrPMXEqwXYrUC1HC8ZbDx0Pdmt6QrKZCNKC8dE/MDgdhRLPqqDGytzuF17PF6gjkTGBBMSehq6a3rTkP1HvXntay695uqNF+f0MjG50VbeejXDLm9s1hbeGtGf4zu0Zdhe4CMA/fOvKhwKBgC1ZPujwtUla0buuXW3TodCT0tT62UD3CppDBPmm0p8zJIgFONRpzpXZaEAy2zKs3lvqBPmekNksOKKtZB6XEh/CktROpul/pCNz94CpkC3egQN6hZDCCGM5Sae/gBMmmK0eOouGZ6NyJEaf1dHLu2WyZFNaodH3DVqi6O3VZQ5ZAoGAVKwOBA2GfI7ZT2JqjnYBqHx3YqRnHe1YmXJND02tdcJ1bKfKMPneOQhqKMT7Ozo7HJv0s7+xlgbaxVBTxDvYndRak+BdiTjQYwsJ/pVoLMsvyVSPs1f2DhG8as+g3VdjAEmzAuGpB66Bavn4emZqx92rBVc33gHEWAQ+2nIcicsCgYAEd7a9qYhWI9EmV1eVYvhVOhQ4XpWE8XCnUD4u5LOdS2Kd/bdHhTN9YXh0Nv2YsKIn3umtg+bFvtAPBTxClts3nWlmuFoSD0PS+vIZEL6e/ieWFCC1nQPEiX+mpNgbxXHAbb3NdvsjsrivRbk4VUfRKPBBIuTZ9bgudhRX3nE4gw==</cleartext-private-key>
+        <public-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">ct:ssh-public-key-format</public-key-format>
+        <private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types">ct:rsa-private-key-format</private-key-format>
+        <cleartext-private-key>MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCTPBH+V1G4agE9UDrumPeuebtLpH0Byxn1815VKlc/437xvBtp4IFTIlgq0HscWqHd5yF5jGV/OgUbTYWe4O1je9a4VOanDWYxVlH+7moGFBquAJ9snFTGrdoJ+M42cRpHxOoKe9XeXaYJO5jVDaXoiZVk4w9GRKJeq+yLsnpdjJYObEI1rI/tEbgN3aXLaS5aZ0IV/sXWAL3QdaTiumKLbVmuW2OoFT9Bi0kS/VLwmilxdTneVL/PyiTtyygtj6WA9+D4bY5Pr5oUESIxdiLQinidW7Dh5nlBJF2hPoihUjEsYn24FZHZImK9rm9U8QZmkYBIu2mXeZOqRYGyvwcrAgMBAAECggEAAKo8ypFKZTLVXpmGKp22QKt8FRNhHSj1rQ60Vl4ilr9IS382AHxrGR0GmOroI3ClWoM4u3vO2YxBiaYH/He3msNsbNi1UfvVglOJe0VIZU6h8DdAgRUTrPIMEg91nvlTzQ8un21/wclafqAuSIgPP8WfTx1XbFHTCeps3xSnSNTf9uaBuLU4zhnK1gU6sYel2MIEsdsWKyPBSjNpqCWOqyIU85HANzWmLsgr6mcvK1ohYXN1xGlIUlNtoA1YXdCEzD8GFhH7bxPbnmUkkFP3o8dUxe70dtzuNpH0asLdGM0NoGlsghBfvXdmjmNNmRn6h+MjESwBgtWH2mb9t2PSwQKBgQDN1vDWc2EzV/tQbMHLCeBUwNBOTcxK3RnJ9sdRgXM9SfO2pKUrNH5QspmZqARwEIfrJ796ewXGij6KvuRWQDJARKgA9L24W27SiFW4D+nLpsvqvDAHVac/Dgwz+paSRf3w/Ru0ZcwM7TUQFl2Unh+/9x9Ax/qkbl9GDChKdSv9zwKBgQC3HSDv5c2DOOUphWBtIF/gKwDwbnC6xs5dZulCdrbfeC10owzkmAfjzqM+fQxIdynTaB41HvDvO2IhjTKQ7JloCJMMCovwtphku4GBE0BCoEGJU5FfU7B1cTgsfcPCwUDal+GqoReGyhNbfDG7OqSexH2H4mtsN8TzusoWC89z5QKBgF2QnHz+iWprTcNrDFQcsyoTUxyk5H4LLtPNJyD3dMihOvUEtkeDXv+Tj5p28z11ZjMQKEumbCOpZ3BuASDroWvxSWTV2v9YIHH2ovA924pE0WBsFnDfEFzrJ8Tg3Vy0EBBhHRzNQQmHMZ2UbQlHLyt1S3GI9XeU7B3NHOtrg4mlAoGAbAx9FfGEveyBlGmGR3419KGLcVPJovySYpzKARTpvZ09PTjE79IhvbN9se65o7zk6kDiqjeytYdV1TRq5QcnUjLVCeLjRkuIStA1j4NbhLTpVu3/tr88PWBsZBxlufKsoQ/D8hoSNs/gcjgrZC4rWx/YbqkU+AtEZQkQG8gmRl0CgYBlj6hHFWRUP4GiDGDKRAcgpAmPpwhkbqz7d+W9WVEpXU+vRG/oxjSizqjaKLShM/47AilG9Yzx6HirOpJzqDJi0Dl54oKoul+7leb3YePFDWBJYrjuOXAZCF4z12XnDyhxtjktjxR6+gKifoqRgGdX++FC2EUjRx8stsUyUNO2cQ==</cleartext-private-key>
       </asymmetric-key>
     </asymmetric-keys>
   </keystore>
@@ -37,9 +33,9 @@
               <client-authentication>
                 <users>
                   <user>
-                    <name>hasan</name>
+                    <name>ilgaz</name>
                     <keyboard-interactive xmlns="urn:cesnet:libnetconf2-netconf-server">
-                      <use-system-auth />
+                      <use-system-auth/>
                     </keyboard-interactive>
                   </user>
                 </users>
@@ -51,37 +47,7 @@
     </listen>
   </netconf-server>
   <people xmlns="test1">
-    <person>
-      <name>$0</name>
-      <phone>11111</phone>
-    </person>
-    <person>
-      <name>$2</name>
-      <phone>22222</phone>
-    </person>
-    <person>
-      <name>$4</name>
-      <phone>44444</phone>
-    </person>
-    <person>
-      <name>$6</name>
-      <phone>66666</phone>
-    </person>
-    <person>
-      <name>John Doe</name>
-      <phone>12345</phone>
-    </person>
-    <person>
-      <name>aaaa</name>
-      <phone>99999</phone>
-    </person>
-    <person>
-      <name>ahmet</name>
-      <phone>31313</phone>
-    </person>
-    <person>
-      <name>bbbbbb</name>
-      <phone>88888</phone>
-    </person>
+    <name>afsdfasd</name>
+    <phone>12312</phone>
   </people>
 </data>
