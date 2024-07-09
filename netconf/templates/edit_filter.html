@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Filter</h2>
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="id_method" class="form-label">Select Edit Type:</label>
+            <select id="id_method" name="method" class="form-select">
+                {% for option in config_type_form.fields.config_type.choices %}
+                <option value="{{ option.0 }}" {% if option.0 == config_type_form.initial.method %} selected {% endif %}>{{ option.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <h3>Variables and Values</h3>
+        <div class="row mb-3" style="max-height: 400px; overflow-y: auto;">
+            {% for field in variable_value_form %}
+            <div class="col-md-12 mb-3">
+                <div class="row">
+                    <label for="{{ field.id_for_label }}" class="col-form-label col-md-8 text-break" title="{{ field.label }}">{{ field.label }}:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-3">Send Edit</button>
+    </form>
+
+    <a href="{% url 'select_config' %}" class="btn btn-secondary">Back to Select Configuration</a>
+</div>
+
+{% endblock %}

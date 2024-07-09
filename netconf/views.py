@@ -6,61 +6,22 @@ from ncclient import manager
 from ncclient.operations.errors import TimeoutExpiredError
 from ncclient.transport.errors import AuthenticationError as AuthenticationError
 from ncclient.operations.rpc import RPCError 
-from .forms import ConnectForm, ConfigTypeForm
+from .forms import ConnectForm, ConfigTypeForm, VariableValueForm
 import xmltodict 
-import xml.etree.ElementTree 
+from lxml import etree as ET
+
 # Define a global variable for the manager connection
 global_manager = None
+def getFilters(folderPath):
+    config_methods = []
+    for filename in os.listdir(folderPath):
+        if filename.endswith(".xml"):
+            method_name = os.path.splitext(filename)[0]  # Extract method name without extension
+            config_methods.append((method_name, method_name))  # Add tuple for choice field
+    return config_methods
 
-# Define the new name value
-new_name = "ahmet"
-
-# Define the edit-config XML
-edit_config_xml = f"""
-<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <people xmlns="test1">
-        <name>{new_name}</name>
-    </people>
-</config>
-"""
-
-
-
-def get_config_filter(config_type):
-    # Define the filter based on the type of configuration requested
-    if config_type == 'interfaces':
-        return """
-<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
-    <keystore xmlns="urn:ietf:params:xml:ns:yang:ietf-keystore">
-        <asymmetric-keys>
-            <asymmetric-key>
-                <private-key-format xmlns:ct="urn:ietf:params:xml:ns:yang:ietf-crypto-types"/>
-            </asymmetric-key>
-        </asymmetric-keys>
-    </keystore>
-</filter>
-"""
-    elif config_type == 'system':
-        return """
-<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
-    <people xmlns="test1">
-        <name/>
-    </people>
-</filter>
-"""
-    elif config_type == "test1":
-        return """
-<filter>
-    <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-        <people xmlns="test1">
-            <name>Ilgaz</name>
-        </people>
-    </data>
-</filter>
-"""
-    else:
-        return None
 def connect(request):
+
     global global_manager
 
     if request.method == 'POST':
@@ -111,7 +72,6 @@ def connect(request):
         form = ConnectForm()
 
     return render(request, 'connect.html', {'form': form})
-# views.py
 
 def select_config(request):
     global global_manager
@@ -145,15 +105,9 @@ def select_config(request):
         # Fetch server capabilities using the global_manager
         server_capabilities = list(global_manager.server_capabilities)
 
-        # Path to folder where configuration files will be saved
-        config_folder = "filters/get_filters/"  # Adjust this to your actual folder structure
-
+        config_folder = "filters/get_filters/"
         # Get list of configuration methods from XML files
-        config_methods = []
-        for filename in os.listdir(config_folder):
-            if filename.endswith(".xml"):
-                method_name = os.path.splitext(filename)[0]  # Extract method name without extension
-                config_methods.append((method_name, method_name))  # Add tuple for choice field
+        config_methods = getFilters(config_folder) # Adjust this to your actual folder structure
 
         if request.method == 'POST':
             method = request.POST.get('method')
@@ -177,7 +131,7 @@ def select_config(request):
 
                 # Save configuration data to a file
                 file_name = f"{config_type}_config.xml"
-                file_path = os.path.join(config_folder, file_name)
+                file_path = os.path.join("saves/get_saves/", file_name)
                 with open(file_path, 'w') as f:
                     f.write(config)
 
@@ -222,3 +176,57 @@ def select_config(request):
             'error_message': error_message,
             'server_capabilities': []
         })
+
+def extract_variables_from_xml(xml_string):
+    root = ET.fromstring(xml_string)
+    
+    variables = []
+    
+    for elem in root.iter():
+        if elem.text and "$" in elem.text:
+            variable_name = elem.text.strip('{}')
+            path = get_xpath(root, elem)  # Get the real XPath path
+            variables.append((path, variable_name))
+    
+    return variables
+
+def get_xpath(root, elem):
+    path_elements = [elem.tag]
+    for parent in elem.iterancestors():
+        path_elements.insert(0, parent.tag)
+    return '/'.join(path_elements)
+
+def edit_filter(request):
+    config_folder = "filters/edit_filters/"
+    config_methods = getFilters(config_folder)
+
+    if request.method == 'POST':
+        method = request.POST.get('method')
+        filter_file_path = os.path.join(config_folder, f"{method}.xml")
+        with open(filter_file_path, 'r') as file:
+            filter_xml = file.read()
+        variables = extract_variables_from_xml(filter_xml)
+        
+        variable_value_form = VariableValueForm(request.POST, variables=variables)
+
+        if variable_value_form.is_valid():
+            variables = {key: value for key, value in variable_value_form.cleaned_data.items() if key.startswith('variable_')}
+            values = {key: value for key, value in variable_value_form.cleaned_data.items() if key.startswith('value_')}
+            response_message = f"Edit request for method {method} sent successfully.<br>Variables: {variables}<br>Values: {values}"
+            return HttpResponse(response_message)
+
+    else:
+        method = config_methods[0][0] if config_methods else ''
+        filter_file_path = os.path.join(config_folder, f"{method}.xml")
+        with open(filter_file_path, 'r') as file:
+            filter_xml = file.read()
+        variables = extract_variables_from_xml(filter_xml)
+        variable_value_form = VariableValueForm(variables=variables)
+    
+    config_type_form = ConfigTypeForm(choices=config_methods, initial={'method': method})
+
+    return render(request, 'edit_filter.html', {
+        'config_type_form': config_type_form,
+        'variable_value_form': variable_value_form,
+        'config_methods': config_methods,
+    })

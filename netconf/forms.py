@@ -23,3 +23,15 @@ class ConfigTypeForm(forms.Form):
         
         if choices:
             self.fields['config_type'].choices = choices
+
+class VariableValueForm(forms.Form):
+    def __init__(self, variables=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        if variables:
+            for i, (path, variable_name) in enumerate(variables, start=1):
+                self.fields[f'value_{i}'] = forms.CharField(
+                    label=path,  # Use real XPath path as the label
+                    required=False,
+                    widget=forms.TextInput(),  # Empty text input field
+                )
