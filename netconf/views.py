@@ -195,38 +195,103 @@ def get_xpath(root, elem):
     for parent in elem.iterancestors():
         path_elements.insert(0, parent.tag)
     return '/'.join(path_elements)
+import re
 
+def replace_variable_values_in_xml(xml_string, variables):
+    """
+    Replace variable placeholders in XML with their corresponding values.
+
+    Args:
+    - xml_string (str): Original XML string with variable placeholders.
+    - variables (dict): Dictionary where keys are variable names and values are their replacements.
+
+    Returns:
+    - str: XML string with variables replaced by values.
+    """
+    for var_name, var_value in variables.items():
+        # Escape special characters in variable name for regex
+        var_name_escaped = re.escape(var_name)
+        # Replace variable placeholder in XML with new value
+        xml_string = re.sub(r'\{\s*' + var_name_escaped + r'\s*\}', var_value, xml_string)
+
+    return xml_string
 def edit_filter(request):
+    global global_manager
+
     config_folder = "filters/edit_filters/"
-    config_methods = getFilters(config_folder)
 
     if request.method == 'POST':
         method = request.POST.get('method')
         filter_file_path = os.path.join(config_folder, f"{method}.xml")
+
+        # Read the XML filter template
         with open(filter_file_path, 'r') as file:
             filter_xml = file.read()
-        variables = extract_variables_from_xml(filter_xml)
-        
-        variable_value_form = VariableValueForm(request.POST, variables=variables)
 
-        if variable_value_form.is_valid():
-            variables = {key: value for key, value in variable_value_form.cleaned_data.items() if key.startswith('variable_')}
-            values = {key: value for key, value in variable_value_form.cleaned_data.items() if key.startswith('value_')}
-            response_message = f"Edit request for method {method} sent successfully.<br>Variables: {variables}<br>Values: {values}"
+        # Extract variables and values from POST data
+        variables = {}
+        values = {}
+        for key, value in request.POST.items():
+            if key.startswith('variable_'):
+                variable_number = key.split('_')[1]
+                variables[variable_number] = value
+            elif key.startswith('value_'):
+                value_number = key.split('_')[1]
+                values[value_number] = value
+
+        # Replace placeholders in the XML template
+        updated_filter_xml = filter_xml
+        for variable_number, value in values.items():
+            placeholder = f'{{${variable_number}}}'
+            updated_filter_xml = updated_filter_xml.replace(placeholder, value)
+
+        try:
+            # Send edit_config request to the NETCONF server
+            if not global_manager:
+                # Initialize ncclient manager if not already connected
+                global_manager = manager.connect(
+                    # Add your connection parameters here
+                )
+
+            # Send edit request
+            print(updated_filter_xml)
+            xml_obj = ET.fromstring(updated_filter_xml)
+
+            response = global_manager.edit_config(target='running', config=xml_obj)
+
+            # Handle success response
+            response_message = f"Edit request for method {method} sent successfully.<br>Response: {response}"
             return HttpResponse(response_message)
 
+        except RPCError as e:
+            error_message = f"RPC Error: {str(e)}"
+            return render(request, 'edit_filter.html', {
+                'error_message': error_message,
+            })
+
+        except Exception as e:
+            error_message = f"Error sending edit request: {str(e)}"
+            return render(request, 'edit_filter.html', {
+                'error_message': error_message,
+            })
+
     else:
+        # Handle GET request or initial form display
+        config_methods = getFilters(config_folder)
         method = config_methods[0][0] if config_methods else ''
         filter_file_path = os.path.join(config_folder, f"{method}.xml")
+
+        # Read the XML filter template
         with open(filter_file_path, 'r') as file:
             filter_xml = file.read()
+
+        # Extract variables from XML for display in the form
         variables = extract_variables_from_xml(filter_xml)
         variable_value_form = VariableValueForm(variables=variables)
-    
-    config_type_form = ConfigTypeForm(choices=config_methods, initial={'method': method})
+        config_type_form = ConfigTypeForm(choices=config_methods, initial={'method': method})
 
-    return render(request, 'edit_filter.html', {
-        'config_type_form': config_type_form,
-        'variable_value_form': variable_value_form,
-        'config_methods': config_methods,
-    })
+        return render(request, 'edit_filter.html', {
+            'config_type_form': config_type_form,
+            'variable_value_form': variable_value_form,
+            'config_methods': config_methods,
+        })
