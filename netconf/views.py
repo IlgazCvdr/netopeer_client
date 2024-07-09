@@ -11,27 +11,55 @@ import xmltodict
 from dotenv import load_dotenv
 import os
 import copy
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 # Define a global variable for the manager connection
 global_manager = None
-global_dict = None
-global_dict_iterate = None
+global_tree = None
+global_varible_num_for_edit = None
 global_current = None
-global_mark_parent_list = list()
+global_mark_parent_list = set()
 global_mark_parent_temp = set()
+global_identifier = 0   
+global_leaves = []
 # Define the new name value
 new_name = "ahmet"
 new_phone = "31313"
 # Define the edit-config XML
-edit_config_xml = f"""
-<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <people xmlns="test1">
-        <person>
-            <name>{new_name}</name>
-            <phone>{new_phone}</phone>
-        </person>
-    </people>
+edit_config_xml2 = f"""
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" >
+  <people xmlns="test1">
+    <person>
+      <name>aaaa</name>
+      <phone>99999</phone>
+    </person>
+    <person>
+      <name>bbbbbb</name>
+      <phone>88888</phone>
+    </person>
+  </people>
 </config>
+"""
+edit_config_xml = f"""
+<ns0:config xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="test1">
+  <ns1:people>
+    <ns1:person>
+      <ns1:name>$0</ns1:name>
+      <ns1:phone>11111</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$2</ns1:name>
+      <ns1:phone>22222</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$4</ns1:name>
+      <ns1:phone>44444</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$6</ns1:name>
+      <ns1:phone>66666</ns1:phone>
+    </ns1:person>
+  </ns1:people>
+</ns0:config>
 """
 
 def get_config_filter(config_type):
@@ -50,13 +78,26 @@ def get_config_filter(config_type):
 """
     elif config_type == 'system':
         return """
-<filter xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" type="subtree">
-    <people xmlns="test1">
-        <person>
-            <name>John Doe</name>
-        </person>
-    </people>
-</filter>
+<ns0:filter xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="test1">
+  <ns1:people>
+    <ns1:person>
+      <ns1:name>John Doe</ns1:name>
+      <ns1:phone>12345</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>aaaa</ns1:name>
+      <ns1:phone>99999</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>ahmet</ns1:name>
+      <ns1:phone>31313</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>bbbbbb</ns1:name>
+      <ns1:phone>88888</ns1:phone>
+    </ns1:person>
+  </ns1:people>
+</ns0:filter>
 """
     elif config_type == "test1":
         return """
@@ -152,6 +193,9 @@ def select_config(request):
                 look_for_keys=False,
                 device_params={'name': 'default'}
             )
+        # response = global_manager.edit_config(target='running', config=edit_config_xml)
+                
+        # print(response)
 
         # Fetch server capabilities using the global_manager
         server_capabilities = list(global_manager.server_capabilities)
@@ -161,9 +205,6 @@ def select_config(request):
 
             try:
 
-                response = global_manager.edit_config(target='running', config=edit_config_xml)
-                
-                print(response)
 
                 if method == 'all':
                     # Fetch all configurations
@@ -220,30 +261,50 @@ def select_config(request):
         error_message = f"Error connecting or fetching server capabilities: {str(e)}"
         return render(request, 'select_config.html', {'form': ConfigTypeForm(), 'error_message': error_message})
 
-
-def remover(root):
-    global global_mark_parent_list
-    print("traverse"+root.tag)
+def mark_children(root):
+    global global_mark_parent_temp
+    global global_leaves
+    if len(root) == 0:
+        text = root.tag+" {$"+root.attrib["id"]+"}"
+        if not text in global_leaves:
+            global_leaves.append(text)
     for i in root[:]:
-        print(str(i),i in global_mark_parent_list)
-        if not i in global_mark_parent_list:
-            root.remove(i)
-        else:
-            print("not remove:"+i.tag)
-            remover(i)
-    print(global_mark_parent_list)
-    return 
+        mark_children(i)
+    global_mark_parent_temp.add(root.attrib['id'])
 
-def print_xml(root):
-    remover(root)
-    
+ 
+def enumerate_func(root):
+    global global_identifier
+    global_identifier = global_identifier + 1 
+    root.set("id",str(global_identifier))
+    for i in root:
+        enumerate_func(i)
+
+def build_xml(root,isEdit):
+    global global_mark_parent_list 
+    global global_varible_num_for_edit
+    if len(root) == 0:
+        if isEdit:
+            root.text = f'{"{"}${global_varible_num_for_edit}{"}"}'
+            global_varible_num_for_edit = global_varible_num_for_edit + 1
+        return
+    for i in root[:]:
+        if i.attrib["id"] in global_mark_parent_list:
+            global_mark_parent_list.remove(i.attrib["id"])
+            i.attrib.pop("id")
+            build_xml(i,isEdit)
+        else:
+            root.remove(i)
+    root.attrib.pop("id", None)
 
 def create_xml(request):
     global global_manager
-    global global_dict
+    global global_tree
     global global_current
     global global_mark_parent_list
-    global global_dict_iterate
+    global global_mark_parent_temp
+    global global_leaves
+    global global_varible_num_for_edit
     load_dotenv()
     # Retrieve connection data from session
     connection_data = request.session.get('netopeer_connection')
@@ -256,33 +317,66 @@ def create_xml(request):
     username = connection_data['username']
     password = connection_data['password']
 
-
-    action = request.POST.get('action')
-
-    if global_current is None or action == "reset" or action == "add":
-        tree = ET.parse('./saves/all_configurations_config.xml')
-        root = tree.getroot()
-        if action == "add":
-            for i in global_mark_parent_list:
-                print("parent:"+i.tag)
-            print_xml(root)
-            print(ET.tostring(root, encoding='utf-8', method='xml'))
-        global_current = root
-        global_mark_parent_list.append(global_current)
-        return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[i.tag for i in global_current]})
-    if len(global_current) == 0:
-        return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[global_current.text],'error_message':"You already selected the leaf"})
-    else:
-        tmp = request.POST.get('method')
-        #print(tmp)
-        for i in global_current:
-            if i.tag == tmp:
-                global_current = i
-                break
-        lst = []
-        for i in global_current:
-            lst.append(i.tag)
-        global_mark_parent_list.append(global_current)
+    try:
+        action = request.POST.get('action')
+        type = request.POST.get('option')
+        filename = request.POST.get('filename')
+        if action == "create":
+            if not global_tree.getroot() is None:
+                global_varible_num_for_edit = 0
+                if type == "get":
+                    new_tag = str(global_tree.getroot().tag).split("}")[0]+"}filter"
+                    global_tree.getroot().tag = new_tag
+                    build_xml(global_tree.getroot(),False)
+                    #print(et.tostring(global_tree.getroot(), encoding='utf-8', method='xml').decode())    
+                    with open(f'./filters/{filename}_get.xml', 'w') as f:
+                        global_tree.write(f, encoding='unicode')
+                    global_leaves = []
+                elif type == "edit":
+                    new_tag = str(global_tree.getroot().tag).split("}")[0]+"}config"
+                    global_tree.getroot().tag = new_tag
+                    build_xml(global_tree.getroot(),True)
+                    #print(et.tostring(global_tree.getroot(), encoding='utf-8', method='xml').decode())    
+                    with open(f'./filters/{filename}_get.xml', 'w') as f:
+                        global_tree.write(f, encoding='unicode')
+                    global_leaves = []
+        if global_current is None or action == "reset" or action == "add" or action == "create":
+            tree = et.parse('./saves/all_configurations_config.xml')
+            root = tree.getroot()
+            global_tree = tree
+            global global_identifier 
+            print(global_tree.getroot().tag)
+            global_identifier = 0
+            enumerate_func(root)
+            #print(et.tostring(root, encoding='utf-8', method='xml').decode())
+            if action == "add":
+                if len(global_current) != 0:
+                    mark_children(global_current)
+                global_mark_parent_list = global_mark_parent_list.union(global_mark_parent_temp)
+                global_mark_parent_temp = set()
+                #for i in global_mark_parent_list:
+                #    print("parent:"+i)
+                #print(et.tostring(root, encoding='utf-8', method='xml').decode())
+            global_current = root
+            global_mark_parent_temp.add(global_current.attrib["id"])
+            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[i.tag+"$"+i.attrib["id"] for i in global_current],'leaves':global_leaves})
         if len(global_current) == 0:
-            return render(request, 'create_xml.html',{'current':global_current.tag, 'children':[global_current.text]})
-        return render(request, 'create_xml.html',{'current':global_current.tag, 'children':lst})
+            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[global_current.text],'error_message':"You already selected the leaf",'leaves':global_leaves})
+        else:
+            tmp = request.POST.get('method')
+            tmp2 = tmp.split("$")[1]
+            #print(global_current.attrib['id'])
+            for i in global_current:
+                if i.attrib["id"] == tmp2:
+                    global_current = i
+                    break
+            lst = []
+            for i in global_current:
+                lst.append(i.tag+"$"+i.attrib["id"])
+            global_mark_parent_temp.add(global_current.attrib["id"])
+            if len(global_current) == 0:
+                return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[global_current.text],'leaves':global_leaves})
+            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':lst,'leaves':global_leaves})
+    except Exception as e:
+        error_message = f"Error: {str(e)}"
+        return render(request, 'create_xml.html',{'current':"", 'children':[],'leaves':""})

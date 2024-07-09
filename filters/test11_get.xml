@@ -1,0 +1,14 @@
+<ns0:filter xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="urn:ietf:params:xml:ns:yang:ietf-keystore" xmlns:ns2="test1">
+  <ns1:keystore>
+    </ns1:keystore>
+  <ns2:people>
+    <ns2:person>
+      <ns2:name>aaaa</ns2:name>
+      <ns2:phone>99999</ns2:phone>
+    </ns2:person>
+    <ns2:person>
+      <ns2:name>bbbbbb</ns2:name>
+      <ns2:phone>88888</ns2:phone>
+    </ns2:person>
+  </ns2:people>
+</ns0:filter>

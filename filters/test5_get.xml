@@ -1,0 +1,12 @@
+<filter xmlns:ns0="test1" xmlns:ns1="abcd">
+  <ns0:people>
+    <ns0:person>
+      <ns1:name>$0</ns1:name>
+      <ns0:phone>$1</ns0:phone>
+    </ns0:person>
+    <ns0:person>
+      <ns0:name>$2</ns0:name>
+      <ns0:phone>$3</ns0:phone>
+    </ns0:person>
+  </ns0:people>
+</filter>

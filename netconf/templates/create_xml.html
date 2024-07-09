@@ -36,5 +36,25 @@
         <input type="hidden" name="reset" value="{{current}}" />
         <button type="submit" class="btn btn-primary mb-3">Reset</button>
     </form>
+
+    <div class="mb-3">
+        <label class="form-label">Selected Leaves:</label>
+        <!-- Scrollable list of server capabilities -->
+        <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+          {% for value in leaves %}
+            <div class="list-group-item">{{ value }}</div>
+          {% endfor %}
+        </div>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create" />
+        <input type="radio" id="edit" name="option" value="edit">
+        <label for="edit">Edit</label>
+        <input type="radio" id="get" name="option" value="get" checked>
+        <label for="get">Get </label>
+        <input type="text" name="filename" required placeholder="filter name"/>
+        <button type="submit" class="btn btn-primary mb-3">Create Filter</button>
+    </form>
 </div>
 {% endblock %}

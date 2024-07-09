@@ -1,0 +1,18 @@
+<ns0:data xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="urn:ietf:params:xml:ns:yang:ietf-keystore" xmlns:ns2="urn:ietf:params:xml:ns:yang:ietf-netconf-acm">
+  <ns1:keystore>
+    <ns1:asymmetric-keys>
+      <ns1:asymmetric-key>
+        <ns1:name>genkey</ns1:name>
+        <ns1:public-key-format>
+          ct:ssh-public-key-format</ns1:public-key-format>
+        <ns1:private-key-format>
+          ct:rsa-private-key-format</ns1:private-key-format>
+        <ns1:cleartext-private-key>
+          MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCM2rDeYQmvRFMbrKjLyAzfugCpOw58MD/guTplPOYt7U2dEPwR6YBFBuDXVlTHNUWhLoiCovBtrMzTcOh7jKhZmai2zZ56YXOMtkmKTlMdq7ynjYXlARnc+FMK2SqbmdpVo0WK0V8xQVSn0H+kxDJo2A//093+I1rW93QdFctaRsM85sfzqOG0SlS6Be3YBFmAPyCrPPSTWeiLZOGfBV88ozVGCcQNsG8RoTCXhQ8M1UERZWdlz00RBttU9tt5vcAI5d9hD9+DxKoaaaLj1NrzgiiA6rcmndImQFsCTuF9ACaiKi5c3cSZhW/hkmsIC5c8eN8x54ijP66uO/W08debAgMBAAECggEAOEguQj2ODB2GA9ni/MJr+n2tQ/HYIOF6tMXuwoMqCpH24FroDhQ6b9qGvyS87Xio4PXiECkhXwGcOqS0EKIsptjSZHEW8Rm9fS1dh0kyxvlXga/4H4BoIDaNoBkUgGZiqrN51zVAD0Nmm0OhrWnEJsam5fd3jdP8uUbZe8G4ptJlz3oVZmbg432n8KRdjuFrljcqmzlD0thx1Yi7frEH/AV/gHXNK2Rn46pJtZJDTa1Mkqdo3F0d+CCCVs9KWd5W9KFq8tyL0HrLJspqN9N5IrRn4hylRx6HHWSY9hPtW7gYS2tW5FUjKoCLHRCOx41PFuK778Z7YcVxSDECOopp0QKBgQC2DfNw6+qgTPU8w9uA4TOp5lklNYDKg25vENsGAMNIo7Bl3CwH9y+5rg0/gSVyPbZeK//U0rlXeHEq5OrU5z3EZKCYLpFuMvAE6p9SDHPw90bBeO0jBLxvsf8J/Htnw+fWfBGa1Z9WBo+4aAvVCWDVbo7CJTDj/3wwy7G62WeLswKBgQDGELwFCRbrZuWdjirVkrDy8NPcDltTCBs2ja8QgFlFHEM9oHYVx4SivGjEmVI4ifDedVOg/II5O5Ka8n/bqh8TpsUDbamJqEeGWRPyhYnJhJmJv/x9XeBsnKvZpLHDnMAYgmwyIAA7rz6C6fD82up4P78DdhfLPfWwrww5l1PweQKBgCGBDcVBVYusvhExxkrApz5kSxGi+BHNAFzmUDiZmVbb8RG95EiPADR+yKdgQCD3JIHOPSXQphVn8APB30nRSLfFAR0grNkH/M4a07lI22mESHxAofuo2nj/2/zdf2SIVDlP2fmRyOIPERIR6+OH908wKoumRoofMZ7VTd8iNYErAoGBAIFucB/uR67/Z++k9vLoUIABxsDYFO/WrUniHtPuu+eAx6QfFuu2nUNnUiOfee5+ngwRqdvbBxJ1jqF49PrMWlCSO864vAC8Gjl+Pp3OjDNHVrqA3nPihAUWAOtSR+Rnq9SYbjH3XY+jPnt4e0YRnQWFysJtSrFDRSn3ykpcTLspAoGABWKBNWt6xeIXzgbaZrEqb/7zkHLau7TJk+/tB+iaMPJ749CaL3q0HjS4OBviOKjbXW8Gsij1sJsQ6kqYA/yBkZNlAw9SkaMgMOn7I4s2MmJCvJAp4PaVUrARkjTEPCBZLjNPLK5peIka5V/N/K6IEW1NCCJQnmU/ixHD/vbUSN8=</ns1:cleartext-private-key>
+      </ns1:asymmetric-key>
+    </ns1:asymmetric-keys>
+  </ns1:keystore>
+  <ns2:nacm>
+    <ns2:enable-nacm>false</ns2:enable-nacm>
+  </ns2:nacm>
+  </ns0:data>

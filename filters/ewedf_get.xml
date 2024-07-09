@@ -1,0 +1,36 @@
+<ns0:filter xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="test1">
+  <ns1:people>
+    <ns1:person>
+      <ns1:name>$0</ns1:name>
+      <ns1:phone>11111</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$2</ns1:name>
+      <ns1:phone>22222</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$4</ns1:name>
+      <ns1:phone>44444</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>$6</ns1:name>
+      <ns1:phone>66666</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>John Doe</ns1:name>
+      <ns1:phone>12345</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>aaaa</ns1:name>
+      <ns1:phone>99999</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>ahmet</ns1:name>
+      <ns1:phone>31313</ns1:phone>
+    </ns1:person>
+    <ns1:person>
+      <ns1:name>bbbbbb</ns1:name>
+      <ns1:phone>88888</ns1:phone>
+    </ns1:person>
+  </ns1:people>
+</ns0:filter>
