@@ -465,13 +465,13 @@ def create_xml(request):
         filename = request.POST.get('filename')
         if action == "create":
             if not global_tree.getroot() is None:
-                global_varible_num_for_edit = 0
+                global_varible_num_for_edit = 1
                 if type == "get":
                     new_tag = str(global_tree.getroot().tag).split("}")[0]+"}filter"
                     global_tree.getroot().tag = new_tag
                     build_xml(global_tree.getroot(),False)
                     #print(et.tostring(global_tree.getroot(), encoding='utf-8', method='xml').decode())    
-                    with open(f'./filters/{filename}_get.xml', 'w') as f:
+                    with open(f'./filters/get_filters/{filename}_get.xml', 'w') as f:
                         global_tree.write(f, encoding='unicode')
                     global_leaves = []
                 elif type == "edit":
@@ -479,7 +479,7 @@ def create_xml(request):
                     global_tree.getroot().tag = new_tag
                     build_xml(global_tree.getroot(),True)
                     #print(et.tostring(global_tree.getroot(), encoding='utf-8', method='xml').decode())    
-                    with open(f'./filters/{filename}_get.xml', 'w') as f:
+                    with open(f'./filters/edit_filters/{filename}_edit.xml', 'w') as f:
                         global_tree.write(f, encoding='unicode')
                     global_leaves = []
         if global_current is None or action == "reset" or action == "add" or action == "create":
@@ -492,8 +492,7 @@ def create_xml(request):
             enumerate_func(root)
             #print(et.tostring(root, encoding='utf-8', method='xml').decode())
             if action == "add":
-                if len(global_current) != 0:
-                    mark_children(global_current)
+                mark_children(global_current)
                 global_mark_parent_list = global_mark_parent_list.union(global_mark_parent_temp)
                 global_mark_parent_temp = set()
                 #for i in global_mark_parent_list:
