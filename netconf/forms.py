@@ -39,14 +39,9 @@ class VariableValueForm(forms.Form):
         if variables:
             for i, (path, variable_name) in enumerate(variables, start=1):
                 self.fields[f'variable_{i}'] = forms.CharField(
-                    label=f'Path of Variable {i}',
-                    initial=path,
-                    required=False,
-                    widget=forms.TextInput(attrs={'readonly': 'readonly'})
-                )
-                self.fields[f'value_{i}'] = forms.CharField(
-                    label=f'Text Field {i}',
+                    label=f'{path}',
                     max_length=100,
                     required=False,
-                    widget=forms.TextInput()
-                )
+                    widget=forms.TextInput())
+                
+                

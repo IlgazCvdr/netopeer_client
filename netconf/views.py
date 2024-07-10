@@ -175,7 +175,6 @@ def connect(request):
         form = ConnectForm()
 
     return render(request, 'connect.html', {'form': form})
-
 def select_config(request):
     global global_manager
 
@@ -282,7 +281,6 @@ def select_config(request):
             'error_message': error_message,
             'server_capabilities': []
         })
-
 def extract_variables_from_xml(xml_string):
     root = ET.fromstring(xml_string)
     
@@ -295,7 +293,6 @@ def extract_variables_from_xml(xml_string):
             variables.append((path, variable_name))
     
     return variables
-
 def get_xpath(root, elem):
     path_elements = [elem.tag]
     for parent in elem.iterancestors():
@@ -344,10 +341,11 @@ def edit_filter(request):
             elif key.startswith('value_'):
                 value_number = key.split('_')[1]
                 values[value_number] = value
-
         # Replace placeholders in the XML template
+        print(variables)
         updated_filter_xml = filter_xml
-        for variable_number, value in values.items():
+        for variable_number,value in variables.items():
+            print(variables)
             placeholder = f'{{${variable_number}}}'
             updated_filter_xml = updated_filter_xml.replace(placeholder, value)
 
@@ -401,8 +399,6 @@ def edit_filter(request):
             'variable_value_form': variable_value_form,
             'config_methods': config_methods,
         })
-        return render(request, 'select_config.html', {'form': ConfigTypeForm(), 'error_message': error_message})
-
 def mark_children(root):
     global global_mark_parent_temp
     global global_leaves

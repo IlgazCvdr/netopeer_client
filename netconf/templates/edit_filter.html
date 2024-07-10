@@ -1,3 +1,4 @@
+<!-- edit_filter.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -25,7 +26,7 @@
         <div class="row mb-3" style="max-height: 400px; overflow-y: auto;">
             {% for field in variable_value_form %}
             <div class="col-md-12 mb-3">
-                <div class="row">
+                <div class="row align-items-center">
                     <label for="{{ field.id_for_label }}" class="col-form-label col-md-8 text-break" title="{{ field.label }}">{{ field.label }}:</label>
                     <div class="col-md-4">
                         <input type="text" class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}">
