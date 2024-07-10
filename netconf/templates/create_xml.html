@@ -12,8 +12,7 @@
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="id_method" class="form-label">Current Element is "{{current}}". You can select a child
-                element.</label>
+            <label for="id_method" class="form-label">Current Element is "{{current}}". You can select a child element.</label>
             <select id="id_method" name="method" class="form-select">
                 {% for item in children %}
                 <option value="{{item}}">{{ item }}</option>
@@ -41,9 +40,9 @@
         <label class="form-label">Selected Leaves:</label>
         <!-- Scrollable list of server capabilities -->
         <div class="list-group" style="max-height: 200px; overflow-y: auto;">
-          {% for value in leaves %}
+            {% for value in leaves %}
             <div class="list-group-item">{{ value }}</div>
-          {% endfor %}
+            {% endfor %}
         </div>
     </div>
     <form method="post">
@@ -56,5 +55,8 @@
         <input type="text" name="filename" required placeholder="filter name"/>
         <button type="submit" class="btn btn-primary mb-3">Create Filter</button>
     </form>
+
+    <!-- Button to go back to Select Configuration Page -->
+    <a href="{% url 'select_config' %}" class="btn btn-secondary">Back to Select Configuration</a>
 </div>
 {% endblock %}

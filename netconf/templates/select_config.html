@@ -36,7 +36,13 @@
     </div>
   </div>
 
-  <a href="{% url 'connect' %}" class="btn btn-secondary">Go back to connection</a>
+  <div class="mb-3">
+    <a href="{% url 'connect' %}" class="btn btn-secondary me-2 mb-2">Go back to connection</a>
+    <!-- Button to Edit Filter Page -->
+    <a href="{% url 'edit_filter' %}" class="btn btn-warning me-2 mb-2">Send Filter</a>
+    <!-- Button to Create XML Page -->
+    <a href="{% url 'create_xml' %}" class="btn btn-info mb-2">Create Filter</a>
+  </div>
 
   {% if config_data %}
   <hr>
@@ -71,8 +77,7 @@
     </div>
   </div>
   {% endif %}
+  
 
-  <!-- Button to Edit Filter Page -->
-  <a href="{% url 'edit_filter' %}" class="btn btn-warning mb-3">Edit Filter</a>
 </div>
 {% endblock %}
