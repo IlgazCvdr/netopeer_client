@@ -9,7 +9,7 @@ from ncclient.operations.rpc import RPCError
 from .forms import ConnectForm, ConfigTypeForm, VariableValueForm
 import xmltodict 
 from lxml import etree as ET
-
+from .forms import NodeForm
 from dotenv import load_dotenv
 import os
 import copy
@@ -478,7 +478,18 @@ def create_xml(request):
                     with open(f'./filters/edit_filters/{filename}_edit.xml', 'w') as f:
                         global_tree.write(f, encoding='unicode')
                     global_leaves = []
-        if global_current is None or action == "reset" or action == "add" or action == "create":
+        if action == "clear":
+            global_leaves = []
+            if len(global_current) == 0:
+                nodeform = NodeForm(nodes=[global_current.text],cur=global_current.tag+"$"+global_current.attrib["id"])
+            else:
+                nodeform = NodeForm(nodes=[i.tag+"$"+i.attrib["id"] for i in global_current],cur=global_current.tag+"$"+global_current.attrib["id"])
+            context = {
+                'children': nodeform,
+                'leafform': global_leaves,
+            }
+            return render(request, 'create_xml.html',context)
+        if global_current is None or action == "reset" or action == "add" or action == "create" or request.method == 'GET':
             tree = et.parse('./saves/all_configurations_config.xml')
             root = tree.getroot()
             global_tree = tree
@@ -496,12 +507,26 @@ def create_xml(request):
                 #print(et.tostring(root, encoding='utf-8', method='xml').decode())
             global_current = root
             global_mark_parent_temp.add(global_current.attrib["id"])
-            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[i.tag+"$"+i.attrib["id"] for i in global_current],'leaves':global_leaves})
+            nodeform = NodeForm(nodes=[i.tag+"$"+i.attrib["id"] for i in global_current],cur=global_current.tag+"$"+global_current.attrib["id"])
+            context = {
+                'children': nodeform,
+                'leafform': global_leaves,
+            }
+            return render(request, 'create_xml.html',context)
         if len(global_current) == 0:
-            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[global_current.text],'error_message':"You already selected the leaf",'leaves':global_leaves})
+            nodeform = NodeForm(nodes=[global_current.text],cur=global_current.tag+"$"+global_current.attrib["id"])
+            context = {
+                'error_message': "The leaf node is already selected.",
+                'children': nodeform,
+                'leafform': global_leaves,
+            }
+            return render(request, 'create_xml.html',context)
         else:
-            tmp = request.POST.get('method')
-            tmp2 = tmp.split("$")[1]
+            if request.method == 'POST':
+                form = NodeForm(request.POST, nodes=[i.tag+"$"+i.attrib["id"] for i in global_current],cur=global_current.tag+"$"+global_current.attrib["id"])
+                if form.is_valid():
+                    selected_method = form.cleaned_data['Children']
+                    tmp2 = selected_method.split("$")[1]
             #print(global_current.attrib['id'])
             for i in global_current:
                 if i.attrib["id"] == tmp2:
@@ -511,9 +536,23 @@ def create_xml(request):
             for i in global_current:
                 lst.append(i.tag+"$"+i.attrib["id"])
             global_mark_parent_temp.add(global_current.attrib["id"])
+            nodeform = NodeForm(nodes=lst,cur=global_current.tag+"$"+global_current.attrib["id"])
+            context = {
+                'children': nodeform,
+                'leafform': global_leaves,
+            }
             if len(global_current) == 0:
-                return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':[global_current.text],'leaves':global_leaves})
-            return render(request, 'create_xml.html',{'current':global_current.tag+"$"+global_current.attrib["id"], 'children':lst,'leaves':global_leaves})
+                nodeform = NodeForm(nodes=[global_current.text],cur=global_current.tag+"$"+global_current.attrib["id"])
+                context['children'] = nodeform
+                return render(request, 'create_xml.html',context)
+            return render(request, 'create_xml.html',context)
     except Exception as e:
         error_message = f"Error: {str(e)}"
-        return render(request, 'create_xml.html',{'current':"", 'children':[],'leaves':""})
+        print("sdfsdf")
+        nodeform = NodeForm(nodes=[],cur="")
+        context = {
+            'error_message': error_message,
+            'children': nodeform,
+            'leafform': global_leaves, 
+        }
+        return render(request, 'create_xml.html',context)

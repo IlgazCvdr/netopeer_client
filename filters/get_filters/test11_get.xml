@@ -1,0 +1,10 @@
+<ns0:filter xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:ns1="urn:ietf:params:xml:ns:yang:ietf-keystore" xmlns:ns2="test1">
+  <ns1:keystore>
+    <ns1:asymmetric-keys>
+      </ns1:asymmetric-keys>
+  </ns1:keystore>
+  <ns2:people>
+    <ns2:name>afsdfasd</ns2:name>
+    <ns2:phone>12312</ns2:phone>
+  </ns2:people>
+</ns0:filter>

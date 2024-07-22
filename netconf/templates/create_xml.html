@@ -9,54 +9,45 @@
         {{ error_message }}
     </div>
     {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="id_method" class="form-label">Current Element is "{{current}}". You can select a child element.</label>
-            <select id="id_method" name="method" class="form-select">
-                {% for item in children %}
-                <option value="{{item}}">{{ item }}</option>
-                {% endfor %}
-            </select>
+    <div style="display: flex;flex-direction: column;">
+            <form method="post" style="margin: 0;">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ children|crispy }}
+                    <input type="hidden" name="current" value="{{current}}" />
+                    <input type="hidden" name="action" id="action-input" value="select" />
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary mb-3" onclick="document.getElementById('action-input').value='select'">Select</button>
+                    <button type="submit" class="btn btn-primary mb-3" onclick="document.getElementById('action-input').value='add'">Add</button>
+                    <button type="submit" class="btn btn-primary mb-3" onclick="document.getElementById('action-input').value='reset'">Reset</button>
+                    <button type="submit" class="btn btn-primary mb-3" onclick="document.getElementById('action-input').value='clear'">Clear Added</button>
+                </div>
+            </form>
+
+
+            <div class="mb-3">
+                <label class="form-label">Selected Leaves:</label>
+                <!-- Scrollable list of server capabilities -->
+                <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                    {% for field in leafform %}
+                        <p>{{ field }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create" />
+            <input type="radio" id="edit" name="option" value="edit">
+            <label for="edit">Edit</label>
+            <input type="radio" id="get" name="option" value="get" checked>
+            <label for="get">Get </label>
+            <input type="text" name="filename" required placeholder="filter name"/>
+            <button type="submit" class="btn btn-primary">Create Filter</button>
+        </form>
         </div>
-        <button type="submit" name="action" value="select" class="btn btn-primary mb-3">Select</button>
-    </form>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="add" />
-        <input type="hidden" name="add" value="{{current}}" />
-        <button type="submit" class="btn btn-primary mb-3">Add</button>
-    </form>
-
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="reset" />
-        <input type="hidden" name="reset" value="{{current}}" />
-        <button type="submit" class="btn btn-primary mb-3">Reset</button>
-    </form>
-
-    <div class="mb-3">
-        <label class="form-label">Selected Leaves:</label>
-        <!-- Scrollable list of server capabilities -->
-        <div class="list-group" style="max-height: 200px; overflow-y: auto;">
-            {% for value in leaves %}
-            <div class="list-group-item">{{ value }}</div>
-            {% endfor %}
-        </div>
+        <!-- Button to go back to Select Configuration Page -->
+        <a style="position: fixed; bottom: 3rem; right: 5rem;" href="{% url 'select_config' %}" class="btn btn-secondary">Back to Select Configuration</a>
     </div>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="create" />
-        <input type="radio" id="edit" name="option" value="edit">
-        <label for="edit">Edit</label>
-        <input type="radio" id="get" name="option" value="get" checked>
-        <label for="get">Get </label>
-        <input type="text" name="filename" required placeholder="filter name"/>
-        <button type="submit" class="btn btn-primary mb-3">Create Filter</button>
-    </form>
-
-    <!-- Button to go back to Select Configuration Page -->
-    <a href="{% url 'select_config' %}" class="btn btn-secondary">Back to Select Configuration</a>
-</div>
 {% endblock %}

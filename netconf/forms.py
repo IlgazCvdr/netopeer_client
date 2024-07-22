@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout, Field
 from dotenv import load_dotenv
 import os
 
@@ -43,5 +43,20 @@ class VariableValueForm(forms.Form):
                     max_length=100,
                     required=False,
                     widget=forms.TextInput())
-                
+
+class NodeForm(forms.Form):
+    current = ""
+    Children = forms.ChoiceField(choices=[], label='')
+
+    def __init__(self, *args, nodes=None, cur="", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.current = cur 
+        if nodes is not None:
+            self.fields['Children'].choices = [(leaf, leaf) for leaf in nodes]
+
+        self.fields['Children'].label = f'Current Element is "{self.current}". You can select a child element.'
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('method', 'Submit', css_class='btn-primary'))
                 
