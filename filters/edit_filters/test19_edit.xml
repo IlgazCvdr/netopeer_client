@@ -1,0 +1,13 @@
+<ns0:config xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0"
+    xmlns:ns1="test1">
+    <ns1:people>
+        <ns1:person>
+            <ns1:name>{$1}</ns1:name>
+            <ns1:phone>{$2}</ns1:phone>
+        </ns1:person>
+        <ns1:person>
+            <ns1:name>{$3}</ns1:name>
+            <ns1:phone>{$4}</ns1:phone>
+        </ns1:person>
+    </ns1:people>
+</ns0:config>

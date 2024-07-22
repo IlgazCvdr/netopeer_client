@@ -434,6 +434,16 @@ def build_xml(root,isEdit):
         else:
             root.remove(i)
     root.attrib.pop("id", None)
+def createSourceFile():
+    global global_manager
+    try:
+        xml = global_manager.get_config(source='running').data_xml
+        tree = et.fromstring(xml)
+        tree_str = et.tostring(tree, encoding='unicode')
+        with open('./saves/all_configurations_config.xml', 'w') as file:
+            file.write(tree_str)
+    except Exception as e:
+        raise Exception(f"Error: {str(e)}")
 
 def create_xml(request):
     global global_manager
@@ -454,7 +464,6 @@ def create_xml(request):
     port = connection_data['port']
     username = connection_data['username']
     password = connection_data['password']
-
     try:
         action = request.POST.get('action')
         type = request.POST.get('option')
@@ -479,6 +488,7 @@ def create_xml(request):
                         global_tree.write(f, encoding='unicode')
                     global_leaves = []
         if action == "clear":
+            global_mark_parent_list = set()
             global_leaves = []
             if len(global_current) == 0:
                 nodeform = NodeForm(nodes=[global_current.text],cur=global_current.tag+"$"+global_current.attrib["id"])
@@ -490,6 +500,7 @@ def create_xml(request):
             }
             return render(request, 'create_xml.html',context)
         if global_current is None or action == "reset" or action == "add" or action == "create" or request.method == 'GET':
+            createSourceFile()
             tree = et.parse('./saves/all_configurations_config.xml')
             root = tree.getroot()
             global_tree = tree
@@ -527,7 +538,7 @@ def create_xml(request):
                 if form.is_valid():
                     selected_method = form.cleaned_data['Children']
                     tmp2 = selected_method.split("$")[1]
-            #print(global_current.attrib['id'])
+            print(global_current.attrib['id'])
             for i in global_current:
                 if i.attrib["id"] == tmp2:
                     global_current = i
@@ -548,7 +559,6 @@ def create_xml(request):
             return render(request, 'create_xml.html',context)
     except Exception as e:
         error_message = f"Error: {str(e)}"
-        print("sdfsdf")
         nodeform = NodeForm(nodes=[],cur="")
         context = {
             'error_message': error_message,
