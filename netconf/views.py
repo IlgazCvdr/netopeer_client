@@ -325,6 +325,24 @@ def edit_filter(request):
 
     if request.method == 'POST':
         method = request.POST.get('method')
+        action = request.POST.get('action', '')
+        print(action)
+        if action == 'select':
+            config_methods = getFilters(config_folder)
+            filter_file_path = os.path.join(config_folder, f"{method}.xml")
+            with open(filter_file_path, 'r') as file:
+                filter_xml = file.read()
+            variables = extract_variables_from_xml(filter_xml)
+            variable_value_form = VariableValueForm(variables=variables)
+            config_type_form = ConfigTypeForm(choices=config_methods, initial={'method': method})
+
+            return render(request, 'edit_filter.html', {
+                'config_type_form': config_type_form,
+                'variable_value_form': variable_value_form,
+                'config_methods': config_methods,
+            })
+
+        # Read the XML filter template
         filter_file_path = os.path.join(config_folder, f"{method}.xml")
 
         # Read the XML filter template
@@ -342,7 +360,7 @@ def edit_filter(request):
                 value_number = key.split('_')[1]
                 values[value_number] = value
         # Replace placeholders in the XML template
-        print(variables)
+        #print(variables)
         updated_filter_xml = filter_xml
         for variable_number,value in variables.items():
             print(variables)
@@ -352,10 +370,7 @@ def edit_filter(request):
         try:
             # Send edit_config request to the NETCONF server
             if not global_manager:
-                # Initialize ncclient manager if not already connected
-                global_manager = manager.connect(
-                    # Add your connection parameters here
-                )
+                raise Exception("NETCONF manager not connected.")
 
             # Send edit request
             print(updated_filter_xml)
@@ -364,8 +379,26 @@ def edit_filter(request):
             response = global_manager.edit_config(target='running', config=xml_obj)
 
             # Handle success response
-            response_message = f"Edit request for method {method} sent successfully.<br>Response: {response}"
-            return HttpResponse(response_message)
+                    
+            config_methods = getFilters(config_folder)
+            method = config_methods[0][0] if config_methods else ''
+            filter_file_path = os.path.join(config_folder, f"{method}.xml")
+    
+            # Read the XML filter template
+            with open(filter_file_path, 'r') as file:
+                filter_xml = file.read()
+    
+            # Extract variables from XML for display in the form
+            variables = extract_variables_from_xml(filter_xml)
+            variable_value_form = VariableValueForm(variables=variables)
+            config_type_form = ConfigTypeForm(choices=config_methods, initial={'method': method})
+    
+            return render(request, 'edit_filter.html', {
+                'config_type_form': config_type_form,
+                'variable_value_form': variable_value_form,
+                'config_methods': config_methods,
+            })
+
 
         except RPCError as e:
             error_message = f"RPC Error: {str(e)}"

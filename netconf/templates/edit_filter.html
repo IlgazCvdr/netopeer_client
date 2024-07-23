@@ -10,18 +10,19 @@
     </div>
     {% endif %}
     
+   
+        
     <form method="post">
         {% csrf_token %}
-
         <div class="mb-3">
             <label for="id_method" class="form-label">Select Edit Type:</label>
-            <select id="id_method" name="method" class="form-select">
+            <select id="id_method" name="method" class="form-select mb-3">
                 {% for option in config_type_form.fields.config_type.choices %}
                 <option value="{{ option.0 }}" {% if option.0 == config_type_form.initial.method %} selected {% endif %}>{{ option.1 }}</option>
                 {% endfor %}
             </select>
+            <button type="submit" class="btn btn-primary mb-3" name="action" value="select">Select Filter</button>
         </div>
-
         <h3>Variables and Values</h3>
         <div class="row mb-3" style="max-height: 400px; overflow-y: auto;">
             {% for field in variable_value_form %}
